@@ -90,16 +90,11 @@ static void _isr(void *arg)
     event_post(EVENT_PRIO_HIGHEST, &_irq_event);
 }
 
-static int print_addresses(int argc, char **argv)
+static int print_addr(int argc, char **argv)
 {
     (void) argc;
     (void) argv;
-    uint8_t *_p = (uint8_t*) &short_addr;
-    for(int i=0;i<2;i++) {
-        printf("%02x", *_p++);
-    }
-    printf("\n");
-    _p = (uint8_t*) &ext_addr;
+    uint8_t *_p = (uint8_t*) &ext_addr;
     for(int i=0;i<8;i++) {
         printf("%02x", *_p++);
     }
@@ -387,32 +382,19 @@ int txtsnd(int argc, char **argv)
 {
     char *text;
     uint8_t addr[8];
-    int iface, idx = 2;
     size_t res;
-    le_uint16_t pan = { 0 };
 
-    switch (argc) {
-        case 4:
-            break;
-        case 5:
-            res = _parse_addr((uint8_t *)&pan, sizeof(pan), argv[idx++]);
-            if ((res == 0) || (res > sizeof(pan))) {
-                return 1;
-            }
-            pan.u16 = byteorder_swaps(pan.u16);
-            break;
-        default:
-            return 1;
-    }
-
-    iface = atoi(argv[1]);
-    res = _parse_addr(addr, sizeof(addr), argv[idx++]);
-    if (res == 0) {
+    if (argc != 3) {
+        puts("Usage: txtsnd <long_addr> <data>");
         return 1;
     }
-    text = argv[idx++];
-    (void) iface;
-    (void) pan;
+
+    res = _parse_addr(addr, sizeof(addr), argv[1]);
+    if (res == 0) {
+        puts("Usage: txtsnd <long_addr> <data>");
+        return 1;
+    }
+    text = argv[2];
     return send(addr, res, text);
 }
 
@@ -443,7 +425,7 @@ int config_phy(int argc, char **argv)
 
 static const shell_command_t shell_commands[] = {
     { "config_phy", "Set channel and TX power", config_phy},
-    { "print_addr", "Print IEEE802.15.4 addresses", print_addresses },
+    { "print_addr", "Print IEEE802.15.4 addresses", print_addr},
     { "txtsnd", "Send IEEE 802.15.4 packet", txtsnd },
     { NULL, NULL, NULL }
 };
