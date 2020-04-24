@@ -402,6 +402,7 @@ int config_phy(int argc, char **argv)
 {
     if (argc < 2) {
         puts("Usage: config_phy <channel> <tx_pow>");
+        return 1;
     }
 
     uint8_t channel = atoi(argv[1]);
@@ -409,6 +410,7 @@ int config_phy(int argc, char **argv)
 
     if (channel < 11 || channel > 26) {
         puts("Wrong channel configuration (11 <= channel <= 26).");
+        return 1;
     }
 #if NETDEV
     netdev_t *netdev = (netdev_t*) _dev;
