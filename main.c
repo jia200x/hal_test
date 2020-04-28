@@ -252,9 +252,9 @@ static int _init(void)
     luid_get_eui64(&ext_addr);
     luid_get_short(&short_addr);
 
-    /* Start the radio (enable interrupts and put it in a state that can be
-     * operated by the HAL. The transceiver state will be "TRX_OFF" */
-    ieee802154_radio_start(_dev);
+    /* Since the device was already initialized, turn on the radio.
+     * The transceiver state will be "TRX_OFF" */
+    ieee802154_radio_on(_dev);
 
     /* If the radio supports address filtering, set all IEEE addresses */
     if (ieee802154_radio_has_addr_filter(_dev)) {
